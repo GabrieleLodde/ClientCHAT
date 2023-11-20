@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class App 
 {
@@ -12,8 +13,9 @@ public class App
     {
         try {
             Socket s = new Socket("localhost", 4500);
+            Socket sBroadcast = new Socket("localhost", 4501);
 
-            BufferedReader inputTastiera = new BufferedReader(new InputStreamReader(System.in));
+            Scanner inputTastiera = new Scanner(System.in);
             BufferedReader inDalServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
             DataOutputStream outVersoIlServer = new DataOutputStream(s.getOutputStream());
             String stringaTastiera = "";
@@ -21,42 +23,32 @@ public class App
             int scelta;
             boolean esci = false;
 
+
             System.out.println("> Benvenuto, inserisci il tuo nickname");
-            stringaTastiera = inputTastiera.readLine();
+            stringaTastiera = inputTastiera.nextLine();
+            System.out.println(stringaRicevuta);
             outVersoIlServer.writeBytes(stringaTastiera + "\n");
 
+            ClientThread canaleBroadcast = new ClientThread(sBroadcast);
+            canaleBroadcast.start();
+
             while(!esci){
+                richiamaMenu();
 
-                // stringaRicevuta = inDalServer.readLine();
-                // if(!stringaRicevuta.equals("")){
-                //     System.out.println(stringaRicevuta);
-                // }
-
-                //questo mi blocca il client, perchè mi resta in attesa di un messaggio all'infinito
-
-                System.out.println("-----MENU-----");
-                System.out.println("> Invia un messaggio a tutti i partecipanti --> (1)");
-                System.out.println("> Invia un messaggio ad un partecipante specifico --> (2)");
-                System.out.println("> Abbandona il gruppo --> (3)");
-                System.out.println("--------------");
-
-                stringaTastiera = inputTastiera.readLine();
+                stringaTastiera = inputTastiera.nextLine();
                 scelta = Integer.parseInt(stringaTastiera);
 
                 switch (scelta) {
                     case 1:        //invio di un messaggio in broadcast
-                        
-                        outVersoIlServer.writeBytes("1" + "\n");
-
-                        System.out.println("> Inserisci il messaggio da inviare...");
-                        stringaTastiera = inputTastiera.readLine();
-                        outVersoIlServer.writeBytes(stringaTastiera + "\n");
+                        System.out.println("Inserisci il testo del messaggio...");
+                        stringaTastiera = inputTastiera.nextLine();
+                        outVersoIlServer.writeBytes("@all:" + stringaTastiera + "\n");
                         break;
 
                     case 2:        //invio di un messaggio ad un partecipante specifico
 
-                        System.out.println("> Inserisci il nickname del partecipante con cui vuoi comunicare...");
-                        stringaTastiera = inputTastiera.readLine();
+                        System.out.println("Inserisci il nome del partecipante");
+                        stringaTastiera = inputTastiera.nextLine();
                         //.............
                         break;
 
@@ -65,14 +57,28 @@ public class App
                         esci = true;
                         outVersoIlServer.writeBytes("-1" + "\n");
                         System.out.println("Peccato, hai abbandonato il gruppo!");
+                        canaleBroadcast.terminate();
+                        break;
+                    
+                    case 4 : 
+
+                        richiamaMenu();
                         break;
                 }
             }
-
             s.close();
         } catch (IOException e) {
             System.out.println("> Attenzione, errore nella creazione della comunicazione");
         }
             
+    }
+
+    public static void richiamaMenu(){
+        System.out.println("-----MENU-----" +   
+               "\n> Invia un messaggio a tutti i partecipanti --> (1)" + 
+               "\n> Invia un messaggio ad un partecipante specifico --> (2)" +  
+               "\n> Abbandona il gruppo --> (3)" + 
+               "\n> Digita /menu per visualizzare nuovamente il menu" + 
+               "\n--------------");
     }
 }
