@@ -7,37 +7,49 @@ import java.net.Socket;
 
 public class ClientThread extends Thread{
     
-    Socket s;
+    Socket broadcastSocket;
     BufferedReader inBroadcastDalServer;
     boolean running;
-    public ClientThread(Socket s) {
-        this.s = s;
+    String nome;
+
+    public ClientThread(Socket broadcastSocket, String nome) {
+        this.broadcastSocket = broadcastSocket;
         this.running = true;
+        this.nome = nome;
         try {
-            this.inBroadcastDalServer = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            this.inBroadcastDalServer = new BufferedReader(new InputStreamReader(broadcastSocket.getInputStream()));
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("> Errore nella comunicazione " + e.getMessage());
+            System.out.println("> Errore nella creazione della comunicazione broadcast" + e.getMessage());
         }
     }
 
     @Override
     public void run(){
-        String messaggioRicevuto = "";
+        String messaggioRicevutoBroadcast = "";
         while (this.running) {
             try {
-                messaggioRicevuto = inBroadcastDalServer.readLine();
-                if(messaggioRicevuto != null)
-                    System.out.println(messaggioRicevuto);
+                messaggioRicevutoBroadcast = inBroadcastDalServer.readLine();
+                if(!messaggioRicevutoBroadcast.equals(null)){
+                    System.out.println(messaggioRicevutoBroadcast);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
-                System.out.println("> Errore nella comunicazione " + e.getMessage());
+                System.out.println("> Errore nella comunicazione broadcast " + e.getMessage());
             }
         }
-        System.out.println("Sto terminando");
+        System.out.println("> Termine esecuzione thread client");
     }
 
-    public void terminate(){
+    public void terminaEsecuzione(){
         this.running = false;
+    }
+
+    public void setNome(String nome){
+        this.nome = nome;
+    }
+
+    public String getNome(){
+        return this.nome;
     }
 }
