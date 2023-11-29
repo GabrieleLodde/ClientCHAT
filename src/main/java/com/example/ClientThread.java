@@ -2,75 +2,85 @@ package com.example;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
 
-public class ClientThread extends Thread{
-    
-    private Socket broadcastSocket;
-    private BufferedReader inBroadcastDalServer;
+public class ClientThread extends Thread {
+
+    private BufferedReader inDalServer;
+    private String nickname;
     private boolean running;
-    private String nome;
-    private boolean entrato;
+    private String messaggeReceived;
 
-    public ClientThread(Socket broadcastSocket, String nome, boolean entrato) {
-        this.broadcastSocket = broadcastSocket;
+    public ClientThread(BufferedReader inDalServer, String nickname) {
+        this.inDalServer = inDalServer;
+        this.nickname = nickname;
         this.running = true;
-        this.nome = nome;
-        try {
-            this.inBroadcastDalServer = new BufferedReader(new InputStreamReader(this.broadcastSocket.getInputStream()));
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("> Errore nella creazione della comunicazione broadcast" + e.getMessage());
-        }
-        this.entrato = entrato;
+        this.messaggeReceived = "";
     }
 
     @Override
-    public void run(){
-        String messaggioRicevutoBroadcast = "";
-        while (this.running) {
-            try {
-                messaggioRicevutoBroadcast = inBroadcastDalServer.readLine();
-                if(!messaggioRicevutoBroadcast.equals(null) && this.entrato == true ){
-                    if(checkNome(messaggioRicevutoBroadcast)){
-                        System.out.println(formattaMessaggio(messaggioRicevutoBroadcast) + "\n> Premere Invio");
-                    }
+    public void run() {
+        try {
+            while (this.running == true) {
+                messaggeReceived = inDalServer.readLine();
+                if (!messaggeReceived.equals(null)) {
+                    formattaMessaggio(messaggeReceived);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("> Errore nella comunicazione broadcast");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("ERRORE LATO THREAD CLIENT");
         }
+        return;
+    }
+
+    public void terminaEsecuzione() {
+        this.setRunning(false);
         System.out.println("> Termine esecuzione thread client");
     }
 
-    public void terminaEsecuzione(){
-        this.running = false;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 
-    public void setNome(String nome){
-        this.nome = nome;
+    public String getNickname() {
+        return this.nickname;
     }
 
-    public String getNome(){
-        return this.nome;
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 
-    public void setEntrato(){
-        this.entrato = true;
-    }
-
-    public boolean checkNome(String messaggio){
-        String[] array = messaggio.split(":");
-        if(array[1].equals(this.getNome())){
-            return false;
+    public void formattaMessaggio(String messaggeReceived) {
+        String[] arrayString = messaggeReceived.split(":", 4);
+        if (!this.getNickname().equals("")) {
+            if (arrayString[0].equals("/nick")) {
+                System.out.println("> " + arrayString[1] + " si e' unito/a al gruppo!");
+                //System.out.println("> Premere invio");
+                this.setNickname(arrayString[1]);
+            }
+            else if(arrayString[0].equals("/all")){
+                System.out.println("> " + arrayString[1] + " ha scritto " + arrayString[2]);
+                //System.out.println("> Premere invio");
+            }
+            else if(arrayString[0].equals("/lista")){
+                System.out.println("---LISTA PARTECIPANTI---");
+                System.out.println(arrayString[1].replaceAll(";", "\n"));
+                //System.out.println("> Premere invio");
+            }
+            else if(arrayString[0].equals("@alone")){
+                System.out.println("> Attenzione, sei da solo/a");
+            }
+            // else if(arrayString[0].equals("@only")){
+            //     System.out.println("> " + arrayString[1] + " ti ha scritto " + arrayString[2]);
+            // }
+            else if(arrayString[0].equals("@wrong")){
+                System.out.println("> Attenzione, il partecipante inserito non fa parte del gruppo");
+            }
+            else if(arrayString[0].equals("/exit")){
+                System.out.println("> " + arrayString[1] + " ha abbandonato il gruppo!");
+                //System.out.println("> Premere Invio");
+            }
         }
-        return true;
     }
 
-    public String formattaMessaggio(String messaggio){
-        String[] array = messaggio.split(":");
-        return array[0] + array[1] + array[2] + array[3];
-    }
 }
