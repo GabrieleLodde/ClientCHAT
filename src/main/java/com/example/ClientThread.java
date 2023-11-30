@@ -2,6 +2,8 @@ package com.example;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.time.format.DateTimeFormatter;  
+import java.time.LocalDateTime;  
 
 public class ClientThread extends Thread {
 
@@ -22,20 +24,20 @@ public class ClientThread extends Thread {
         try {
             while (this.running == true) {
                 messaggeReceived = inDalServer.readLine();
-                if (!messaggeReceived.equals(null)) {
+                if (messaggeReceived != null) {
                     formattaMessaggio(messaggeReceived);
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("ERRORE LATO THREAD CLIENT");
+            System.out.println("ERRORE THREAD CLIENT (IOEXCEPTION)");
+        } catch (NullPointerException ex){
+            System.out.println("ERRORE THREAD CLIENT (LETTURA MESSAGGIO NULL)");
         }
         return;
     }
 
     public void terminaEsecuzione() {
         this.setRunning(false);
-        System.out.println("> Termine esecuzione thread client");
     }
 
     public void setNickname(String nickname) {
@@ -51,34 +53,42 @@ public class ClientThread extends Thread {
     }
 
     public void formattaMessaggio(String messaggeReceived) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");  
+        LocalDateTime now = LocalDateTime.now();  
+        
         String[] arrayString = messaggeReceived.split(":", 4);
         if (!this.getNickname().equals("")) {
-            if (arrayString[0].equals("/nick")) {
-                System.out.println("> " + arrayString[1] + " si e' unito/a al gruppo!");
-                //System.out.println("> Premere invio");
+            if (arrayString[0].equals("@nick")) {
+                System.out.println("> | " + arrayString[1].toUpperCase() + " | si e' unito/a al gruppo! ||" + dtf.format(now));
                 this.setNickname(arrayString[1]);
             }
-            else if(arrayString[0].equals("/all")){
-                System.out.println("> " + arrayString[1] + " ha scritto " + arrayString[2]);
-                //System.out.println("> Premere invio");
+            else if(arrayString[0].equals("@all")){
+                System.out.println("> | " + arrayString[1].toUpperCase() + " | ha scritto --> " + arrayString[2] + " ||" + dtf.format(now));
             }
-            else if(arrayString[0].equals("/lista")){
-                System.out.println("---LISTA PARTECIPANTI---");
+            else if(arrayString[0].equals("@lista")){
+                System.out.println("---LISTA PARTECIPANTI--- ||" + dtf.format(now));
                 System.out.println(arrayString[1].replaceAll(";", "\n"));
-                //System.out.println("> Premere invio");
             }
-            else if(arrayString[0].equals("@alone")){
-                System.out.println("> Attenzione, sei da solo/a");
+            else if(arrayString[0].equals("@exit")){
+                System.out.println("> | " + arrayString[1].toUpperCase() + " | ha abbandonato il gruppo! ||" + dtf.format(now));
             }
-            // else if(arrayString[0].equals("@only")){
-            //     System.out.println("> " + arrayString[1] + " ti ha scritto " + arrayString[2]);
-            // }
+            else if(arrayString[0].equals("@alone1")){
+                System.out.println("> Impossibile inviare il messaggio in broadcast, sei presente solo tu! ||" + dtf.format(now));
+            }
+            else if(arrayString[0].equals("@alone2")){
+                System.out.println("> Impossibile inviare il messaggio privato, sei presente solo tu! ||" + dtf.format(now));
+            }
             else if(arrayString[0].equals("@wrong")){
-                System.out.println("> Attenzione, il partecipante inserito non fa parte del gruppo");
+                System.out.println("> Impossibile inviare il messaggio privato,  | " + arrayString[1].toUpperCase() + " | non fa parte del gruppo ||" + dtf.format(now));
             }
-            else if(arrayString[0].equals("/exit")){
-                System.out.println("> " + arrayString[1] + " ha abbandonato il gruppo!");
-                //System.out.println("> Premere Invio");
+            else if(arrayString[0].equals("@only")){
+                System.out.println("> | " + arrayString[1].toUpperCase() + " | ti ha scritto --> " + arrayString[2] + " ||" + dtf.format(now));
+            }
+            else if(arrayString[0].equals("@ok1")){
+                System.out.println("> Messaggio inviato in broadcast! ||" + dtf.format(now));
+            }
+            else if(arrayString[0].equals("@ok2")){
+                System.out.println("> | " + arrayString[1].toUpperCase() + " | ha ricevuto il messaggio! ||" + dtf.format(now));
             }
         }
     }
