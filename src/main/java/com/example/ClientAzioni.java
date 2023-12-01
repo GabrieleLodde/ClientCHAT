@@ -7,7 +7,6 @@ import java.net.Socket;
 import java.time.format.DateTimeFormatter;  
 import java.time.LocalDateTime;  
 
-
 public class ClientAzioni {
 
     private Socket dataSocket;
@@ -34,6 +33,7 @@ public class ClientAzioni {
         try {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");  
             LocalDateTime now = LocalDateTime.now();
+            
             System.out.println("> Benvenuto/a, inserisci il tuo nickname");
             nickname = inputTastiera.readLine().toUpperCase();
             outVersoIlServer.writeBytes("@nick:" + nickname + ":*" + "\n");
@@ -49,7 +49,7 @@ public class ClientAzioni {
                         case "/all":
                             System.out.println("> Inserisci il messaggio in broadcast");
                             tastiera = inputTastiera.readLine();
-                            outVersoIlServer.writeBytes("@all:" + getNickname() + ":" + tastiera + "\n");
+                            outVersoIlServer.writeBytes("@all:" + this.getNickname() + ":" + tastiera + "\n");
                             break;
                         case "/lista":
                             outVersoIlServer.writeBytes("@lista:" + this.getNickname() + "\n");
@@ -61,7 +61,7 @@ public class ClientAzioni {
                             break;
                         case "/exit":
                             System.out.println("> Hai abbandonato la chat! ||" + dtf.format(now));
-                            outVersoIlServer.writeBytes("@exit" + ":" + getNickname() + ":-" + "\n");
+                            outVersoIlServer.writeBytes("@exit:" + this.getNickname() + ":-" + "\n");
                             exit = true;
                             break;
                         default:
@@ -75,7 +75,6 @@ public class ClientAzioni {
             this.dataSocket.close();
             System.exit(1);
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("ERRORE LATO CLIENT");
         }
     }
