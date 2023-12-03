@@ -36,7 +36,7 @@ public class ClientThread extends Thread {
                 // something or not
                 if (messageReceived != null) {
                     // Invocation of the method to format the received message and print it
-                    formattaMessaggio(messageReceived);
+                    formatMessage(messageReceived);
                 }
             }
         } catch (IOException e) {
@@ -56,7 +56,7 @@ public class ClientThread extends Thread {
 
     // Method for formatting and printing messages received from the server based on
     // their syntactic nature
-    public void formattaMessaggio(String messageReceived) {
+    public void formatMessage(String messageReceived) {
         // Creation of the string array coming from the string received from the server
         String[] arrayString = messageReceived.split(":", 3);
         // Check if the server sent the nickname of a new client that initiated the
@@ -126,17 +126,27 @@ public class ClientThread extends Thread {
         // Check if the server has forwarded a confirmation message to a client
         // regarding the previous sending of a broadcast message
         else if (arrayString[0].equals("@ok1")) {
-            System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.GREEN_BOLD_BRIGHT
-                    + "Messaggio inviato in broadcast! " + color.RESET + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now)
-                    + color.RESET + "\n");
+            printConfirmationBroadcastMessage(color.GREEN_BOLD_BRIGHT, "Messaggio inviato in broadcast!");
         }
         // Check if the server has forwarded a confirmation message to a client
         // regarding the previous sending of a message privately
         else if (arrayString[0].equals("@ok2")) {
-            System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.GREEN_BOLD_BRIGHT
-                    + "Messaggio inviato in privato a " + color.RESET + color.BLUE_BOLD_BRIGHT + arrayString[1] + "! "
-                    + color.RESET + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now) + color.RESET + "\n");
+            printConfirmationPrivateMessage(color.GREEN_BOLD_BRIGHT, "Messaggio inviato in privato a ",
+                    color.BLUE_BOLD_BRIGHT, (arrayString[1] + "! "));
         }
+    }
+
+    public void printConfirmationBroadcastMessage(String firstColor, String firstString) {
+        System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + firstColor + firstString + color.RESET
+                + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now)
+                + color.RESET + "\n");
+    }
+
+    public void printConfirmationPrivateMessage(String firstColor, String firstString, String secondColor,
+            String secondString) {
+        System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + firstColor + firstString + color.RESET
+                + secondColor + secondString + color.RESET + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now)
+                + color.RESET + "\n");
     }
 
 }

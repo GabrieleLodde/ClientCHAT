@@ -15,9 +15,9 @@ public class ClientActions {
     private BufferedReader inputTastiera;
     private ClientThread clientThread;
     private String nickname;
-    private boolean nuovo;
+    private boolean newC;
     private boolean exit = false;
-    private String tastiera;
+    private String keyBoardString;
     private DateTimeFormatter dtf;
     private LocalDateTime now;
     private ClientColors color;
@@ -29,9 +29,9 @@ public class ClientActions {
         this.outVersoIlServer = outVersoIlServer;
         this.inputTastiera = new BufferedReader(new InputStreamReader(System.in));
         this.nickname = "";
-        this.nuovo = false;
+        this.newC = false;
         this.exit = false;
-        this.tastiera = "";
+        this.keyBoardString = "";
         this.dtf = DateTimeFormatter.ofPattern("HH:mm");
         this.now = LocalDateTime.now();
         this.color = new ClientColors();
@@ -39,52 +39,60 @@ public class ClientActions {
 
     public void init() {
         try {
-            //Initial nickname request to the client
+            // Initial nickname request to the client
             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.BLUE_BOLD_BRIGHT
                     + "Benvenuto/a, inserisci il tuo nickname" + color.RESET);
-            
-            // Cycle to request the nickname from the client until it enters one that is not present among those in the chat
+
+            // Cycle to request the nickname from the client until it enters one that is not
+            // present among those in the chat
             do {
                 nickname = inputTastiera.readLine().toUpperCase();
                 outVersoIlServer.writeBytes("@nick:" + nickname + ":*" + "\n");
                 String messageServer = inDalServer.readLine();
                 checkNome(messageServer);
-            } while (!isNuovo());
+            } while (!isNewC());
 
-            // Declaration and start of the thread associated with the client to read input messages from the server
+            // Declaration and start of the thread associated with the client to read input
+            // messages from the server
             clientThread = new ClientThread(inDalServer);
             clientThread.start();
 
             // Calling the method to display the menu of choices
-            richiamaMenu();
-            
+            printMenu();
+
             // Client welcome print
             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.BLUE_BOLD_BRIGHT
                     + "Ti sei unito/a alla chat! " + color.RESET + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now)
                     + color.RESET + "\n");
-            
+
             // Infinite loop, until the client wants to exit
             do {
                 // Reading the choice entered by the client from the keyboard
-                tastiera = inputTastiera.readLine();
-                if (tastiera instanceof String && !tastiera.equals(null)) {
+                keyBoardString = inputTastiera.readLine();
+                if (keyBoardString instanceof String && !keyBoardString.equals(null)) {
                     // Controls over client choice
-                    switch (tastiera) {
+                    switch (keyBoardString) {
                         // Choice to send a broadcast message
                         case "/all":
                             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.GREEN_BOLD_BRIGHT
                                     + "Inserisci il messaggio in broadcast" + color.RESET);
-                            tastiera = inputTastiera.readLine();
-                            outVersoIlServer.writeBytes("@all:" + this.getNickname() + ":" + tastiera + "\n");
+                            keyBoardString = inputTastiera.readLine();
+                            outVersoIlServer.writeBytes("@all:" + this.getNickname() + ":" + keyBoardString + "\n");
                             break;
                         // Choice to send a message privately
                         case "/only":
-                            System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.WHITE_BOLD_BRIGHT
-                                    + "Inserisci il nome del partecipante seguito da " + color.RESET
+                            boolean correct = false;
+                            String messageKeyboard;
+                            System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET
+                                    + color.WHITE_BOLD_BRIGHT
+                                    + "Inserisci il nome del client seguito da " + color.RESET
                                     + color.YELLOW_BOLD_BRIGHT + "'#'" + color.RESET + color.WHITE_BOLD_BRIGHT
                                     + " e dal messaggio da inviare" + color.RESET);
-                            String messaggio = inputTastiera.readLine();
-                            outVersoIlServer.writeBytes("@only:" + this.getNickname() + ":" + messaggio + "\n");
+                            do {
+                                messageKeyboard = inputTastiera.readLine();
+                                correct = checkPrivateInput(messageKeyboard);
+                            } while (!correct);
+                            outVersoIlServer.writeBytes("@only:" + this.getNickname() + ":" + messageKeyboard + "\n");
                             break;
                         // Choice to request the list of names of clients currently present
                         case "/lista":
@@ -98,9 +106,9 @@ public class ClientActions {
                             outVersoIlServer.writeBytes("@exit:" + this.getNickname() + ":-" + "\n");
                             exit = true;
                             break;
-                        // Case in which the client has entered a choice not covered among the previous ones
+                        // Case in which the client has entered a choice not covered among the previous
+                        // ones
                         default:
-                            richiamaMenu();
                             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.RED_BOLD_BRIGHT
                                     + "Scelta non valida, riprovare " + color.RESET + color.BLACK_BACKGROUND_BRIGHT
                                     + dtf.format(now) + color.RESET + "\n");
@@ -108,7 +116,8 @@ public class ClientActions {
                     }
                 }
             } while (!exit);
-            // Interrupting the thread associated with the client to read incoming messages from the server
+            // Interrupting the thread associated with the client to read incoming messages
+            // from the server
             clientThread.setRunning(false);
             // Closing the socket to communicate with the server
             this.dataSocket.close();
@@ -120,13 +129,13 @@ public class ClientActions {
     }
 
     // Method for printing the menu with the various possible choices
-    public void richiamaMenu() {
+    public void printMenu() {
         System.out.println("\n" + color.YELLOW_BACKGROUND_BRIGHT + "-----MENU-----" + color.RESET + "\n\n"
-                + color.GREEN_BACKGROUND_BRIGHT + "-Invia un messaggio a tutti i partecipanti:" + color.RESET
+                + color.GREEN_BACKGROUND_BRIGHT + "-Invia un messaggio a tutti i clients:" + color.RESET
                 + color.GREEN_BOLD_BRIGHT + " || /all ||" + color.RESET + "\n\n"
-                + color.WHITE_BACKGROUND_BRIGHT + "-Invia un messaggio ad un partecipante specifico:" + color.RESET
+                + color.WHITE_BACKGROUND_BRIGHT + "-Invia un messaggio ad un client specifico:" + color.RESET
                 + color.WHITE_BOLD_BRIGHT + " || /only ||" + color.RESET + "\n\n"
-                + color.CYAN_BACKGROUND_BRIGHT + "-Visualizza lista partecipanti:" + color.RESET
+                + color.CYAN_BACKGROUND_BRIGHT + "-Visualizza lista clients:" + color.RESET
                 + color.CYAN_BOLD_BRIGHT + " || /lista ||" + color.RESET + "\n\n"
                 + color.BLUE_BACKGROUND_BRIGHT + "-Abbandona il gruppo:" + color.RESET + color.BLUE_BOLD_BRIGHT
                 + " || /exit ||" + color.RESET + "\n");
@@ -143,13 +152,13 @@ public class ClientActions {
     }
 
     // Method to set the new client variable
-    public void setNuovo(boolean nuovo) {
-        this.nuovo = nuovo;
+    public void setNewC(boolean newC) {
+        this.newC = newC;
     }
 
     // Method to return the new client variable
-    public boolean isNuovo() {
-        return nuovo;
+    public boolean isNewC() {
+        return newC;
     }
 
     // Method to check what the server sent relative to the entered nickname
@@ -157,11 +166,45 @@ public class ClientActions {
         if (messageServer != null) {
             if (messageServer.split(":")[0].equals("@new")) {
                 setNickname(nickname);
-                setNuovo(true);
+                setNewC(true);
             } else if (messageServer.split(":")[0].equals("@old")) {
                 System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.RED_BOLD_BRIGHT
                         + "Attenzione inserire un nickname diverso" + color.RESET + "\n");
             }
+        }
+    }
+
+    // Method for printing an error message when entering the message to send
+    // privately
+    public void printPrivateError() {
+        System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET
+                + color.RED_BOLD_BRIGHT
+                + "Inserisci correttamente sia il nome del client seguito da " + color.RESET
+                + color.YELLOW_BOLD_BRIGHT + "'#'" + color.RESET
+                + color.RED_BOLD_BRIGHT
+                + " che il testo del messaggio da inviare" + color.RESET);
+    }
+
+    // Method for checking whether the client has entered both the nickname to
+    // search for and the text of the message to send
+    public boolean checkPrivateInput(String messageKeyboard) {
+        if (messageKeyboard.contains("#")) {
+            try {
+                String nick = messageKeyboard.split("#", 2)[0];
+                String message = messageKeyboard.split("#", 2)[1];
+                if (nick.length() > 0 && message.length() > 0) {
+                    return true;
+                } else {
+                    printPrivateError();
+                    return false;
+                }
+            } catch (IndexOutOfBoundsException ex) {
+                printPrivateError();
+                return false;
+            }
+        } else {
+            printPrivateError();
+            return false;
         }
     }
 }
