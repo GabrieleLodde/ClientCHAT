@@ -1,9 +1,10 @@
 # Chat Server-Client.
-
-Descrizione del Programma:
+---
+## Descrizione del funzionamneto:
 
 Il programma è una semplice applicazione di chat basata su un'architettura server-client implementata in linguaggio Java. La comunicazione avviene tramite socket TCP, consentendo a più client di connettersi al server e partecipare a una chat in tempo reale.
 
+---
 Parte Server:
 1. App.java
 Il file App.java rappresenta il punto di ingresso del server. All'avvio, il server crea un socket in ascolto sulla porta 4500 e accetta connessioni dai client. Ogni client che si connette genera un nuovo thread (ClientCollegato) per gestire la comunicazione con quel particolare client.
