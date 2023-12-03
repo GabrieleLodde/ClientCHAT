@@ -49,7 +49,7 @@ The ClientColors.java class is used to display each print on the terminal with c
 
 ## Programming notes:
 
-- Every single choice from the menu is sent as a command to the server, consisting of "@" replacing "/" in the choice that is entered by the client.
+- Every choice from the menu is sent as a command to the server, consisting of "@" replacing "/" in the choice that is entered by the client.
 - The commands are preceded by an "@" symbol to be recognized by both the server and the client for printing purposes.
 - The program dynamically manages the addition and removal of clients.
 - Messages are clearly formatted in the ClientThread class for better understanding.
