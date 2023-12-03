@@ -28,7 +28,6 @@ La classe ClientAzioni gestisce le azioni e le interazioni dell'utente. Consente
 La classe ClientThread estende la classe Thread e gestisce la ricezione continua di messaggi dal server. I messaggi ricevuti vengono formattati e visualizzati in modo chiaro per l'utente.
 
 ## Istruzioni per l'Esecuzione:
----
 
 ### Server: 
 
@@ -42,10 +41,7 @@ La classe ClientThread estende la classe Thread e gestisce la ricezione continua
 - Qualora la scelta inserita non dovesse essere contemplata, il client viene avvisato e questi è costretto ad inserirne una ulteriore, fino a quando non è coerente con il menu.
 - La chat permette di comunicare in tempo reale con altri partecipanti.
 
----
-
-### Scelte Disponibili Client Side:
-
+### Scelte Disponibili Client Side (dal menu):
 
 /all: Invia un messaggio in broadcast a tutti i partecipanti.
 
@@ -95,5 +91,3 @@ La classe ClientThread estende la classe Thread e gestisce la ricezione continua
 Il progetto è stato sviluppato da:
 
 Gabriele Lodde, Lorenzo Scarpulla, Tommaso Fallani
-
----
