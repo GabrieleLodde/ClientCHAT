@@ -1,4 +1,4 @@
-# Colored Chat Client-Server (Notes Client Side)
+# Colored Chat Client-Server (Notes Client Side) 
 ---
 ## Technologies:
 
