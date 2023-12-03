@@ -1,4 +1,4 @@
-########### Colored Chat Client-Server
+# Colored Chat Client-Server
 ---
 ## Descrizione del funzionamento:
 
