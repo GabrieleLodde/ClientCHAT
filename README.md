@@ -1,5 +1,5 @@
 # Colored Chat Client-Server
-
+---
 ## Descrizione del funzionamento:
 
 The program represents a client-server application that simulates a chat, by sending commands from client to server and vice versa, with the related printouts based on the type of command received/sent.
