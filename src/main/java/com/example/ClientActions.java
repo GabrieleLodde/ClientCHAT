@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
-public class ClientAzioni {
+public class ClientActions {
     // Declaration of the variables used
     private Socket dataSocket;
     private BufferedReader inDalServer;
@@ -20,10 +20,10 @@ public class ClientAzioni {
     private String tastiera;
     private DateTimeFormatter dtf;
     private LocalDateTime now;
-    private ColorExample color;
+    private ClientColors color;
 
     // Constructor
-    public ClientAzioni(Socket dataSocket, BufferedReader inDalServer, DataOutputStream outVersoIlServer) {
+    public ClientActions(Socket dataSocket, BufferedReader inDalServer, DataOutputStream outVersoIlServer) {
         this.dataSocket = dataSocket;
         this.inDalServer = inDalServer;
         this.outVersoIlServer = outVersoIlServer;
@@ -34,7 +34,7 @@ public class ClientAzioni {
         this.tastiera = "";
         this.dtf = DateTimeFormatter.ofPattern("HH:mm");
         this.now = LocalDateTime.now();
-        this.color = new ColorExample();
+        this.color = new ClientColors();
     }
 
     public void init() {
