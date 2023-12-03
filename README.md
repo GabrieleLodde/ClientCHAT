@@ -10,33 +10,33 @@ The program represents a client-server application that simulates a chat, by sen
 
 ### Server Side (classes):
 
-1. App.java
-The App.java file represents the entry point of the server. Upon startup, the server creates a socket listening on port 4500 and accepts connections from clients. Each client that connects generates a new thread (ClientConnected) to manage communication with that particular client, in order to manage multi-threads operation.
+1. AppServer.java
+The AppServer.java file represents the entry point of the server. Upon startup, the server creates a socket listening on port 4500 and accepts connections from clients. Each client that connects generates a new thread (ClientConnected) to manage communication with that particular client, in order to manage multi-threads operation.
 
-2. ClientCollegato.java
+2. ClientConnected.java
 The ClientConnected class extends the Thread class and handles communication with a single client. It interprets commands sent by the client and handles various operations, including broadcast messages, private messages, participant list requests and disconnect management. For each functionality there are checks relating to the feasibility of these operations, since the client could have sent any type of message and the server must be able to handle any situation.
 
 ### Client Side (classes):
 
-1. App.java
-The App.java file is the client entry point. When started, the client connects to the server on port 4500 and initializes an instance of ClientAzioni to handle user interactions.
+1. AppClient.java
+The App.java file is the client entry point. When started, the client connects to the server on port 4500 and initializes an instance of ClientActions to handle user interactions.
 
-2. ClientAzioni.java
+2. ClientActions.java
 The ClientActions class manages user actions and interactions. Allows the user to enter a nickname, send broadcast messages, request a list of participants, send private messages and exit the chat. This implementation choice was dictated by the need to have a single class to manage each operation granted to the client, rather than having all the functioning within the App.java file (relating to the client part). A separate thread (ClientThread) handles the continuous receipt of messages from the server.
 
 3. ClientThread.java
-The Client Thread class extends the Thread class and handles the continuous receipt of messages from the server. The messages received are formatted and displayed clearly for the user, based on the commands sent by the server itself at the beginning of each individual message.
+The ClientThread class extends the Thread class and handles the continuous receipt of messages from the server. The messages received are formatted and displayed clearly for the user, based on the commands sent by the server itself at the beginning of each individual message.
 
 ## Instructions for Execution:
 
 ### Server side: 
 
-- Run the App.java file on the server side. The server will be listening on port 4500.
+- Run the AppServer.java file on the server side. The server will be listening on port 4500.
 - For each command received, the server has specific methods that allow linear communication with the client.
 
 ### Client side: 
 
-- Run the App.java file on the client side. The client will connect to the server on the port specified in the socket declaration (by programmer choice on port 4500).
+- Run the AppClient.java file on the client side. The client will connect to the server on the port specified in the socket declaration (by programmer choice on port 4500).
 - Enter a nickname when requested and use the menu commands, displayed only initially, to interact with the chat.
 - If the choice entered is not contemplated, the client is notified and is forced to enter a further one, until it is consistent with those provided in the menu.
 - The program allows you to communicate in real time with other connected clients.
