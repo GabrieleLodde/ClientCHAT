@@ -39,6 +39,7 @@ The ClientThread class extends the Thread class and handles the continuous recei
 ### 4. ClientColors.java:
 
 The ClientColors.java class is used to display each print on the terminal with criteria relating to the type of print.
+
 ---
 ## Instructions for Execution:
 
