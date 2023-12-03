@@ -1,8 +1,9 @@
-# Chat Server-Client.
+########### Colored Chat Client-Server
 ---
-## Descrizione del funzionamneto:
+## Descrizione del funzionamento:
 
-Il programma è una semplice applicazione di chat basata su un'architettura server-client implementata in linguaggio Java. La comunicazione avviene tramite socket TCP, consentendo a più client di connettersi al server e partecipare a una chat in tempo reale.
+The program represents a client-server application that simulates a chat, by sending commands from client to server and vice versa, with the related printouts based on the type of command received/sent.
+
 
 ---
 Parte Server:
