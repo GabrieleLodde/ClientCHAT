@@ -71,7 +71,7 @@ public class ClientThread extends Thread {
         }
         // Check if the server has forwarded the list of nicknames of connected clients,
         // previously requested by a client
-        else if (arrayString[0].equals("@lista")) {
+        else if (arrayString[0].equals("@list")) {
             System.out.println(color.CYAN_BACKGROUND_BRIGHT + "---LISTA PARTECIPANTI---" + color.RESET);
             System.out.println(arrayString[1].replaceAll(";", "\n") + color.RESET);
         }
@@ -118,14 +118,14 @@ public class ClientThread extends Thread {
         // Check if the server has forwarded a confirmation message to a client
         // regarding the previous sending of a message privately
         else if (arrayString[0].equals("@ok2")) {
-            printConfirmationMessage(color.GREEN_BOLD_BRIGHT, "Messaggio inviato in privato a ",
+            printConfirmationMessage(("\n" + color.GREEN_BOLD_BRIGHT), "Messaggio inviato in privato a ",
                     color.BLUE_BOLD_BRIGHT, (arrayString[1] + "! "));
         }
     }
 
     // Various methods of printing messages
     public void printConfirmationBroadcastMessage(String firstColor, String firstString) {
-        System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + firstColor + firstString + color.RESET
+        System.out.println("\n" + color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + firstColor + firstString + color.RESET
                 + color.BLACK_BACKGROUND_BRIGHT + dtf.format(now)
                 + color.RESET + "\n");
     }

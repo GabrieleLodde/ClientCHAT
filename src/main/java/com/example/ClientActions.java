@@ -67,6 +67,7 @@ public class ClientActions {
 
             // Infinite loop, until the client wants to exit
             do {
+                String messageKeyboard;
                 // Reading the choice entered by the client from the keyboard
                 keyBoardString = inputTastiera.readLine();
                 if (keyBoardString instanceof String && !keyBoardString.equals(null)) {
@@ -74,15 +75,18 @@ public class ClientActions {
                     switch (keyBoardString) {
                         // Choice to send a broadcast message
                         case "/all":
+                            boolean correctB = false;
                             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET + color.GREEN_BOLD_BRIGHT
                                     + "Inserisci il messaggio in broadcast" + color.RESET);
-                            keyBoardString = inputTastiera.readLine();
-                            outVersoIlServer.writeBytes("@all:" + this.getNickname() + ":" + keyBoardString + "\n");
+                            do {
+                                messageKeyboard = inputTastiera.readLine();
+                                correctB = checkInput(messageKeyboard);
+                            } while (!correctB);
+                            outVersoIlServer.writeBytes("@all:" + this.getNickname() + ":" + messageKeyboard + "\n");
                             break;
                         // Choice to send a message privately
                         case "/only":
-                            boolean correct = false;
-                            String messageKeyboard;
+                            boolean correctP = false;
                             System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET
                                     + color.WHITE_BOLD_BRIGHT
                                     + "Inserisci il nome del client seguito da " + color.RESET
@@ -90,13 +94,13 @@ public class ClientActions {
                                     + " e dal messaggio da inviare" + color.RESET);
                             do {
                                 messageKeyboard = inputTastiera.readLine();
-                                correct = checkPrivateInput(messageKeyboard);
-                            } while (!correct);
+                                correctP = checkPrivateInput(messageKeyboard);
+                            } while (!correctP);
                             outVersoIlServer.writeBytes("@only:" + this.getNickname() + ":" + messageKeyboard + "\n");
                             break;
                         // Choice to request the list of names of clients currently present
-                        case "/lista":
-                            outVersoIlServer.writeBytes("@lista:" + this.getNickname() + "\n");
+                        case "/list":
+                            outVersoIlServer.writeBytes("@list:" + this.getNickname() + "\n");
                             break;
                         // Choice to exit the chat and stop communication
                         case "/exit":
@@ -136,7 +140,7 @@ public class ClientActions {
                 + color.WHITE_BACKGROUND_BRIGHT + "-Invia un messaggio ad un client specifico:" + color.RESET
                 + color.WHITE_BOLD_BRIGHT + " || /only ||" + color.RESET + "\n\n"
                 + color.CYAN_BACKGROUND_BRIGHT + "-Visualizza lista clients:" + color.RESET
-                + color.CYAN_BOLD_BRIGHT + " || /lista ||" + color.RESET + "\n\n"
+                + color.CYAN_BOLD_BRIGHT + " || /list ||" + color.RESET + "\n\n"
                 + color.BLUE_BACKGROUND_BRIGHT + "-Abbandona il gruppo:" + color.RESET + color.BLUE_BOLD_BRIGHT
                 + " || /exit ||" + color.RESET + "\n");
     }
@@ -182,7 +186,15 @@ public class ClientActions {
                 + "Inserisci correttamente sia il nome del client seguito da " + color.RESET
                 + color.YELLOW_BOLD_BRIGHT + "'#'" + color.RESET
                 + color.RED_BOLD_BRIGHT
-                + " che il testo del messaggio da inviare" + color.RESET);
+                + " che il testo del messaggio da inviare" + color.RESET + "\n");
+    }
+
+    // Method for printing an error message when entering the message to send
+    // in broadcast
+    public void printBroadcastError() {
+        System.out.println(color.PURPLE_BOLD_BRIGHT + "> " + color.RESET
+                + color.RED_BOLD_BRIGHT
+                + "Inserisci correttamente il messaggio da inviare! " + color.RESET);
     }
 
     // Method for checking whether the client has entered both the nickname to
@@ -206,5 +218,14 @@ public class ClientActions {
             printPrivateError();
             return false;
         }
+    }
+
+    // Method for checking whether the client has entered a message without text
+    public boolean checkInput(String messageKeyboard) {
+        if (messageKeyboard.equals(" ") || messageKeyboard.equals("")) {
+            printBroadcastError();
+            return false;
+        }
+        return true;
     }
 }
