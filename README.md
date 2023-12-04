@@ -43,7 +43,7 @@ The ClientColors.java class is used to display each print on the terminal with c
 
 /only: Send a private message to a specific client.
 
-/lista: Request and display the list of current clients.
+/list: Request and display the list of current clients.
 
 /exit: Leave the chat and exit the communication. Once the communication is expired, the socket that allows the exchange of messages is closed on both the client and server sides.
 
